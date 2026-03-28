@@ -11,9 +11,7 @@ import numpy as np
 import base64
 import json
 import os
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, "models", "best_model.pth")
-# ══════════════════════════════════════════════════════════
+import gc
 # CONFIGURATION
 # ══════════════════════════════════════════════════════════
 
@@ -40,19 +38,31 @@ transform = A.Compose([
 # ══════════════════════════════════════════════════════════
 
 def load_model():
-    print("Loading model...")
-    model = EfficientNet.from_pretrained('efficientnet-b0')
+    # 1. Use absolute path for reliability
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(base_path, "models", "best_model.pth")
+    
+    # 2. Initialize structure (don't load pretrained here if possible)
+    model = EfficientNet.from_name('efficientnet-b0') 
     model._fc = nn.Linear(model._fc.in_features, 7)
-    model.load_state_dict(
-        torch.load('models/best_model.pth', map_location=device)
-    )
-    model.to(device)
+    
+    # 3. Load weights specifically to CPU and use 'weights_only' if torch version allows
+    state_dict = torch.load(model_path, map_location='cpu', weights_only=True)
+    model.load_state_dict(state_dict)
+    
+    # 4. Clean up the temporary state_dict from RAM immediately
+    del state_dict
+    gc.collect() 
+    
     model.eval()
-    print("✅ Model loaded\n")
     return model
 
-model = load_model()
-
+# Load model inside a try-except to see the real error if it fails
+try:
+    model = load_model()
+except Exception as e:
+    print(f"❌ CRITICAL ERROR LOADING MODEL: {e}")
+    model = None
 # ══════════════════════════════════════════════════════════
 # FASTAPI APP
 # ══════════════════════════════════════════════════════════
