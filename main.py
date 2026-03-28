@@ -10,7 +10,9 @@ from albumentations.pytorch import ToTensorV2
 import numpy as np
 import base64
 import json
-
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "models", "best_model.pth")
 # ══════════════════════════════════════════════════════════
 # CONFIGURATION
 # ══════════════════════════════════════════════════════════
@@ -42,7 +44,7 @@ def load_model():
     model = EfficientNet.from_pretrained('efficientnet-b0')
     model._fc = nn.Linear(model._fc.in_features, 7)
     model.load_state_dict(
-        torch.load('./models/best_model.pth', map_location=device)
+        torch.load('models/best_model.pth', map_location=device)
     )
     model.to(device)
     model.eval()
