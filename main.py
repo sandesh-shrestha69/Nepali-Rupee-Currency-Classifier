@@ -15,7 +15,8 @@ import gc
 # CONFIGURATION
 # ══════════════════════════════════════════════════════════
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu") 
+
 
 CLASS_NAMES = ['Rs 10', 'Rs 100', 'Rs 1000', 'Rs 20', 'Rs 5', 'Rs 50', 'Rs 500']
 
