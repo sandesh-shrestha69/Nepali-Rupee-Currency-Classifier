@@ -1,50 +1,50 @@
-# 🇳🇵 Nepali Currency Classifier - Real-Time Detection System
+# Nepali Rupee Currency Classifier 🚀
 
-A production-grade real-time currency recognition system achieving **99% accuracy** on 3,401 test images using EfficientNet transfer learning and computer vision techniques.
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/YOUR_USERNAME/Nepali-Rupee-Currency-Classifier)
 
-![Demo](https://img.shields.io/badge/Accuracy-99%25-success)
-![Model](https://img.shields.io/badge/Model-EfficientNet--B0-blue)
-![Framework](https://img.shields.io/badge/Framework-PyTorch-orange)
-![API](https://img.shields.io/badge/API-FastAPI-green)
+## Real-time Nepali Rupee Detection
 
----
+**Live camera scanning** with bounding boxes and confidence scores.
 
-## 🌟 Features
+## Features
+- 7 denominations: Rs 5, 10, 20, 50, 100, 500, 1000
+- EfficientNet-B0 (99% accuracy)
+- WebSocket real-time detection
+- 70% confidence threshold
+- Modern glassmorphism UI
+- Upload & live modes
 
-### Core Capabilities
-- ✅ **Real-time Detection**: Continuous scanning via WebSocket (500ms intervals)
-- ✅ **Smart Bounding Boxes**: Only displays when currency detected (>70% confidence)
-- ✅ **High Accuracy**: 99% test accuracy on 3,401 images
-- ✅ **Multi-denomination Support**: 7 Nepali currency denominations (Rs 5, 10, 20, 50, 100, 500, 1000)
-- ✅ **Dual Mode**: Upload image or live camera detection
-- ✅ **Production Ready**: FastAPI backend with WebSocket streaming
-
-### Technical Highlights
-- **Transfer Learning**: EfficientNet-B0 pre-trained on ImageNet
-- **Data Augmentation**: Albumentations library with rotation, brightness, contrast, blur
-- **Class Balancing**: WeightedRandomSampler for imbalanced datasets
-- **Two-Phase Training**: Head-only (3 epochs) → Full fine-tuning (15 epochs)
-- **Real-time Inference**: WebSocket-based continuous detection
-- **Confidence Thresholding**: Smart detection with 70% threshold
-
----
-
-## 📊 Performance Metrics
-
-### Test Results
+## Local Setup
+```bash
+pip install -r requirements.txt
+python main.py
 ```
-Total Test Samples: 3,401
-Overall Accuracy: 99.00%
-Total Confusions: 32 (0.94% error rate)
+Frontend: `frontend/index.html`
 
-Per-Class Performance:
-├─ Rs 5:    300/300 = 100.00% ✅ PERFECT
-├─ Rs 100:  554/554 = 100.00% ✅ PERFECT
-├─ Rs 10:   599/623 = 96.15% (24 confused with Rs 20)
-├─ Rs 1000: 477/479 = 99.58%
-├─ Rs 20:   455/463 = 98.27%
-├─ Rs 50:   [high accuracy]
-└─ Rs 500:  [high accuracy]
+## Render Deployment (1-click)
+1. Fork this repo
+2. Click Deploy button above
+3. Model uploads automatically
+
+**Live Demo**: [Your Render URL after deploy]
+
+## Model
+- `models/best_model.pth`: Pre-trained EfficientNet
+- Threshold: 70%
+
+## Usage
+1. Open frontend
+2. Live Detection → Point camera at NPR note
+3. Green box + badge = detected
+
+## Scripts
+```bash
+python scripts/train.py    # Retrain
+python scripts/evaluate.py # Test accuracy
+python scripts/predict.py  # CLI predict
+```
+
+**Production Ready** 🇳🇵✨
 
 Main Confusion Pattern:
   Rs 10 ↔ Rs 20: 32 confusions (expected - similar appearance)
