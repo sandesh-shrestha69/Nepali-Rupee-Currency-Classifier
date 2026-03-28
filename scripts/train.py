@@ -1,6 +1,7 @@
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 import torch
+import torch.nn.functional as F
 from torchvision import datasets
 from efficientnet_pytorch import EfficientNet  
 import torch.nn as nn
@@ -9,6 +10,9 @@ from collections import Counter
 from torch.utils.data import WeightedRandomSampler, DataLoader
 import numpy as np
 from pathlib import Path
+from PIL import ImageFile
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 class AlbumentationsWrapper:
     def __init__(self, transform):
@@ -42,9 +46,9 @@ def train():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}\n")
 
-    # TRANSFORMS  
     train_aug = A.Compose([
-        A.Resize(224, 224),
+        A.LongestMaxSize(max_size=224),
+        A.PadIfNeeded(min_height=224, min_width=224, border_mode=0, value=(0,0,0)),
         A.Rotate(limit=30, p=0.7),
         A.VerticalFlip(p=0.4),
         A.HorizontalFlip(p=0.5),  
@@ -57,7 +61,8 @@ def train():
     ])
     
     val_aug = A.Compose([
-        A.Resize(224, 224),
+        A.LongestMaxSize(max_size=224),
+        A.PadIfNeeded(min_height=224, min_width=224, border_mode=0, value=(0,0,0)),
         A.Normalize(
             mean=[0.485, 0.456, 0.406],
             std=[0.229, 0.224, 0.225]
@@ -101,13 +106,13 @@ def train():
         train_data,
         batch_size=32,
         sampler=sampler,
-        num_workers=2
+        num_workers=4
     )
     val_loader = DataLoader(
         val_data,
         batch_size=32,
         shuffle=False,
-        num_workers=2
+        num_workers=4
     )
 
     # MODEL SETUP    
@@ -124,17 +129,14 @@ def train():
     model = model.to(device)
     print(f"Model loaded. Training {num_classes} classes.\n")
 
-    #Focal loss 
     criterion = FocalLoss(gamma=2.0)
-    print("Using FocalLoss (gamma=2.0) for hard example focus.\\n")
+    print("Using FocalLoss (gamma=2.0) for hard example focus.\n")
 
     # PHASE 1: TRAIN HEAD ONLY 
     print("="*60)
     print("PHASE 1: Training head only (5 epochs)")
     print("="*60)
-    
     optimizer = optim.Adam(model._fc.parameters(), lr=1e-3)
-    criterion = nn.CrossEntropyLoss()
     best_val_acc = 0.0
 
     for epoch in range(5):
@@ -188,7 +190,7 @@ def train():
         val_acc = 100 * val_correct / val_total
         avg_val_loss = val_loss / len(val_loader)
         
-        print(f"\nEpoch {epoch+1}/3")
+        print(f"\nEpoch {epoch+1}/5")
         print(f"  Train Loss: {avg_train_loss:.4f} | Train Acc: {train_acc:.2f}%")
         print(f"  Val Loss:   {avg_val_loss:.4f} | Val Acc:   {val_acc:.2f}%")
 
@@ -200,7 +202,7 @@ def train():
 
     # PHASE 2: FINE-TUNE ALL LAYERS    
     print("\n" + "="*60)
-    print("PHASE 2: Fine-tuning all layers (15 epochs)")
+    print("PHASE 2: Fine-tuning all layers (25 epochs)")
     print("="*60)
     
     # Unfreeze all
@@ -258,14 +260,14 @@ def train():
         val_acc = 100 * val_correct / val_total
         avg_val_loss = val_loss / len(val_loader)
         
-        print(f"\nEpoch {epoch+1}/15")
+        print(f"\nEpoch {epoch+1}/25")
         print(f"  Train Loss: {avg_train_loss:.4f} | Train Acc: {train_acc:.2f}%")
         print(f"  Val Loss:   {avg_val_loss:.4f} | Val Acc:   {val_acc:.2f}%")
 
         if val_acc > best_val_acc:  
             best_val_acc = val_acc
             torch.save(model.state_dict(), './models/best_model.pth')
-            print(f" Saved (best: {best_val_acc:.2f}%)")
+            print(f" ✅ Saved (best: {best_val_acc:.2f}%)")
 
     print("\n" + "="*60)
     print(f"Training complete! Best accuracy: {best_val_acc:.2f}%")

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nepali Currency Classifier - Real-time Detection</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="flag-stripe crimson"></div>
+            <div class="flag-stripe blue"></div>
+            <h1>🇳🇵 Nepali Currency Classifier</h1>
+            <p class="subtitle">Real-time currency detection with live bounding boxes</p>
+        </header>
+
+        <!-- Mode Selector -->
+        <div class="mode-selector">
+            <button class="mode-btn active" data-mode="upload">
+                📤 Upload Image
+            </button>
+            <button class="mode-btn" data-mode="realtime">
+                📹 Live Detection
+            </button>
+        </div>
+
+        <!-- Upload Mode -->
+        <div id="upload-mode" class="mode-content active">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <h3>Drop image here or click to upload</h3>
+                <p>Supports: JPG, PNG, JPEG</p>
+                <input type="file" id="fileInput" accept="image/*" hidden>
+            </div>
+
+            <div id="uploadPreview" class="preview-container" style="display: none;">
+                <img id="previewImage" alt="Preview">
+                <button id="clearUpload" class="clear-btn">✕ Clear</button>
+            </div>
+
+            <button id="predictBtn" class="predict-btn" style="display: none;">
+                🔍 Analyze Currency
+            </button>
+
+            <div id="uploadResults" class="results-container" style="display: none;">
+                <h2>📊 Results</h2>
+                <div class="prediction-card">
+                    <div class="prediction-main">
+                        <span class="label">Detected:</span>
+                        <span id="uploadCurrency" class="currency-value">-</span>
+                    </div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" id="uploadConfidenceFill"></div>
+                    </div>
+                    <div class="confidence-text">
+                        Confidence: <span id="uploadConfidenceValue">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Detection Mode -->
+        <div id="realtime-mode" class="mode-content">
+            <div class="realtime-container">
+                <div class="video-wrapper">
+                    <video id="webcam" autoplay playsinline></video>
+                    <canvas id="overlay"></canvas>
+                    <canvas id="hiddenCanvas" style="display: none;"></canvas>
+                </div>
+
+                <div class="detection-status" id="detectionStatus">
+                    <div class="status-indicator"></div>
+                    <span>Ready to detect</span>
+                </div>
+            </div>
+
+            <div class="realtime-controls">
+                <button id="startRealtime" class="control-btn start">
+                    ▶️ Start Real-time Detection
+                </button>
+                <button id="stopRealtime" class="control-btn stop" style="display: none;">
+                    ⏸️ Stop Detection
+                </button>
+            </div>
+
+            <!-- Real-time Results (Overlay) -->
+            <div id="realtimeResults" class="realtime-results" style="display: none;">
+                <div class="result-badge">
+                    <div class="badge-currency" id="realtimeCurrency">-</div>
+                    <div class="badge-confidence" id="realtimeConfidence">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Analyzing currency...</p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="error" class="error-message" style="display: none;"></div>
+
+        <!-- Footer -->
+        <footer>
+            <p>Built with PyTorch & EfficientNet | 99% Accuracy | Real-time Detection</p>
+            <p class="tech-stack">FastAPI WebSocket • Albumentations • Transfer Learning</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

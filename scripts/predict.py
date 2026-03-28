@@ -64,7 +64,7 @@ def predict_currency(image_path):
 
 if __name__ == '__main__':
     # Test with an image
-    result = predict_currency("./image.png")
+    result = predict_currency("WhatsApp Image 2026-03-20 at 10.03.21 AM.jpeg")
     
     print(f"\n{'='*60}")
     print(f"🎯 Predicted: {CLASS_NAMES[result['currency']]}")
