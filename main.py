@@ -75,11 +75,15 @@ except Exception as e:
 # FASTAPI APP
 # ══════════════════════════════════════════════════════════
 
+from fastapi.staticfiles import StaticFiles
+
 app = FastAPI(
     title="Nepali Currency Classifier",
     description="Real-time currency detection with smart bounding boxes",
     version="2.0.0"
 )
+
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
 app.add_middleware(
     CORSMiddleware,
