@@ -24,15 +24,22 @@ CLASS_NAMES = ['Rs 10', 'Rs 100', 'Rs 1000', 'Rs 20', 'Rs 5', 'Rs 50', 'Rs 500']
 CONFIDENCE_THRESHOLD = 0.70  # Production: 70% confidence required
 
 # Transform
-transform = A.Compose([
-    A.Resize(224, 224),
-    A.PadIfNeeded(min_height=224, min_width=224, border_mode=0, fill=(0,0,0)),
-    A.Normalize(
-        mean=[0.485, 0.456, 0.406],
-        std=[0.229, 0.224, 0.225]
-    ),
-    ToTensorV2(),
-])
+    # Lazy transform (create on first use to avoid startup issues)
+_transform = None
+    
+def get_transform():
+    global _transform
+    if _transform is None:
+        _transform = A.Compose([
+            A.Resize(224, 224),
+            A.PadIfNeeded(224, 224, border_mode=0),
+            A.Normalize(
+                mean=[0.485, 0.456, 0.406],
+                std=[0.229, 0.224, 0.225]
+            ),
+            ToTensorV2(),
+        ])
+    return _transform
 
 # ══════════════════════════════════════════════════════════
 # LOAD MODEL
@@ -92,7 +99,7 @@ def predict_from_image(image: Image.Image):
     
     # Transform
     img_np = np.array(image)
-    augmented = transform(image=img_np)
+    augmented = get_transform()(image=img_np)
     image_tensor = augmented['image'].unsqueeze(0)
     image_tensor = image_tensor.to(device)
     
