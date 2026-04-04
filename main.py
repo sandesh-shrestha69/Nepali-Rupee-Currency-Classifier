@@ -76,6 +76,7 @@ except Exception as e:
 # ══════════════════════════════════════════════════════════
 
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 
 app = FastAPI(
     title="Nepali Currency Classifier",
@@ -140,13 +141,7 @@ def predict_from_image(image: Image.Image):
 
 @app.get("/")
 async def root():
-    return {
-        "status": "online",
-        "message": "Nepali Currency Classifier - Smart Detection",
-        "version": "2.0.0",
-        "confidence_threshold": CONFIDENCE_THRESHOLD,
-        "classes": CLASS_NAMES
-    }
+    return RedirectResponse(url="/static/index.html")
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
