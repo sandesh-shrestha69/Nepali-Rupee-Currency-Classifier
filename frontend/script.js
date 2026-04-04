@@ -2,8 +2,8 @@
 // CONFIGURATION
 // ═══════════════════════════════════════════════════════
 
-const API_URL = 'http://localhost:8000';
-const WS_URL = 'ws://localhost:8000/ws/detect';
+const API_URL = window.location.origin;
+const WS_URL = window.location.protocol === 'https:' ? 'wss://' + window.location.host + '/ws/detect' : 'ws://' + window.location.host + '/ws/detect';
 
 let webcamStream = null;
 let websocket = null;
@@ -485,3 +485,4 @@ function showError(message) {
 function hideError() {
     errorDiv.style.display = 'none';
 }
+
